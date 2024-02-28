@@ -41,7 +41,7 @@ bst_t *bst_remove(bst_t *root, int value)
 		{
 			tmp = root;
 			parent = root->parent;
-			root = root->parent;
+			root = root->right;
 			root->parent = parent;
 			free(tmp);
 		}
