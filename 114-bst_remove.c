@@ -4,13 +4,11 @@
  * @node: a pointer to the node with min value
  * Return: a pointer to the node with min value
 */
-bst_t *min_value_node(bst_t *node)
+bst_t *min_value_node(bst_t *root)
 {
-	bst_t *current = node;
-
-	while (current && current->left)
-		current = current->left;
-	return (current);
+	while (root->left)
+		root = root->left;
+	return (root);
 }
 
 /**
@@ -27,7 +25,7 @@ bst_t *bst_remove(bst_t *root, int value)
 	bst_t *tmp, *parent;
 
 	if (!root)
-		return (root);
+		return (NULL);
 	if (value < root->n)
 		root->left = bst_remove(root->left, value);
 	else if (value > root->n)
