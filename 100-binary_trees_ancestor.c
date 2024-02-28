@@ -11,21 +11,11 @@
 binary_tree_t *binary_trees_ancestor(const binary_tree_t *first,
 					const binary_tree_t *second)
 {
-	binary_tree_t *mover = (binary_tree_t *)first;
+	const binary_tree_t *lcm_anc, *hcm_anc;
 
-	if (!first || !second)
-		return (NULL);
-
-	while (first)
-	{
-		while (second)
-		{
-			if (first == second)
-				return ((binary_tree_t *)first);
-			second = second->parent;
-		}
-		first = first->parent;
-		second = mover;
-	}
+	for (lcm_anc = first; lcm_anc; lcm_anc = lcm_anc->parent)
+		for (hcm_anc = second; hcm_anc; hcm_anc = hcm_anc->parent)
+			if (lcm_anc == hcm_anc)
+				return ((binary_tree_t *)lcm_anc);
 	return (NULL);
 }
