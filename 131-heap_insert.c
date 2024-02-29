@@ -1,83 +1,51 @@
 #include "binary_trees.h"
 
 /**
- * create_node - creates a node with a given value
- * @value: the value to be stored in the created node
- * Return: a pointer to the new node
-*/
-heap_t *create_node(int value)
-{
-	heap_t *node = malloc(sizeof(heap_t));
-
-	if (!node)
-		return (NULL);
-	node->n = value;
-	node->parent = node->left = node->right = NULL;
-	return (node);
-}
-
-/**
- * swap - swaps the values of two nodes
+ * heap_bal - swaps the values of two nodes
  * @a: a pointer to the first node
  * @b: a pointer to the second node
  * Return: the swapped nodes
 */
-void swap(heap_t *a, heap_t *b)
+heap_t *heap_bal(heap_t *a, heap_t *b)
 {
 	int temp = a->n;
 
 	a->n = b->n;
 	b->n = temp;
+	return (b);
 }
 
 /**
- * sift_up - sifts up a node in the heap
- * @node: the node to be sifted up
- * Return: the sifted up node
+ * tree_size - measures the size of the tree
+ * @root: a pointer to the root
+ * Return: the tree size, 0 otherwise
 */
-void sift_up(heap_t *node)
+size_t tree_size(const binary_tree_t *root)
 {
-	while (node->parent && node->parent->n < node->n)
-	{
-		swap(node, node->parent);
-		node = node->parent;
-	}
+	if (root == NULL)
+		return (0);
+	return (1 + tree_size(root->left) + tree_size(root->left));
 }
 
 /**
- * level_order_insert - performs level order traversal
+ * find_heap_node - performs level order traversal
  * until an empty spot is found
  * @root: a pointer to the root node
  * @node: a pointer to the spot to insert node
  * Return: the empty spot
 */
-heap_t *level_order_insert(heap_t *root, heap_t *node)
+heap_t *find_heap_node(heap_t *root, size_t node)
 {
-	heap_t *queue[100];
-	int rear = -1, front = 0;
+	size_t prt, chd;
 
-	queue[++rear] = root;
+	if (node == 0)
+		return (root);
+	prt = (node - 1) / 2;
+	chd = (node - 1) % 2;
 
-	while (front <= rear)
-	{
-		heap_t *curr = queue[front++];
-
-		if (!curr->left)
-		{
-			curr->left = node;
-			node->parent = curr;
-			return (node);
-		}
-		else if (!curr->right)
-		{
-			curr->right = node;
-			node->parent = curr;
-			return (node);
-		}
-		queue[++rear] = curr->left;
-		queue[++rear] = curr->right;
-	}
-	return (NULL);
+	if (chd == 0)
+		return (find_heap_node(root, prt)->left);
+	return (find_heap_node(root, prt)->right);
 }
 
 /**
@@ -89,18 +57,40 @@ heap_t *level_order_insert(heap_t *root, heap_t *node)
 */
 heap_t *heap_insert(heap_t **root, int value)
 {
-	heap_t *node = create_node(value);
+	size_t size;
+	int swap = 1;
+	heap_t *n_node, *parent;
 
-	if (!node)
+	if (root == NULL)
 		return (NULL);
-	if (!*root)
+
+	if (*root == NULL)
 	{
-		*root = node;
+		n_node = binary_tree_node(NULL, value);
+		*root = n_node;
+		return (n_node);
 	}
+
+	size = tree_size(*root);
+	parent = find_heap_node(*root, (size - 1) / 2);
+	n_node = binary_tree_node(parent, value);
+	if (size % 2 == 1)
+		parent->left = n_node;
 	else
+		parent->right = n_node;
+	if (n_node == NULL)
+		return (NULL);
+
+	while (swap == 1 && parent != NULL)
 	{
-		node = level_order_insert(*root, node);
-		sift_up(node);
+		if (parent->n >= n_node->n)
+			swap = 0;
+		else
+		{
+			n_node = heap_bal(n_node, parent);
+			parent = n_node->parent;
+		}
 	}
-	return (node);
+
+	return (n_node);
 }
