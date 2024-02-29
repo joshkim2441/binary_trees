@@ -8,15 +8,24 @@
 
 avl_t *array_to_avl(int *array, size_t size)
 {
-	size_t i;
+	size_t i, j;
 	avl_t *root = NULL;
 
-	if (!array || size == 0)
+	if (!array)
 		return (NULL);
-	root = avl_insert(&root, array[0]);
+
 	for (i = 1; i < size; i++)
 	{
-		avl_insert(&root, array[i]);
+		for (j = 0; j < i; j++)
+		{
+			if (array[i] == array[j])
+				break;
+		}
+		if (j == i)
+		{
+			if (avl_insert(&root, array[i]) == NULL)
+				return (NULL);
+		}
 	}
 	return (root);
 }

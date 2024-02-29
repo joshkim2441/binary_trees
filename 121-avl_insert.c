@@ -1,113 +1,77 @@
 #include "binary_trees.h"
 
 /**
- * avl_insert_full - Inserts a value
- *
- * @tree: pointer to the root
- * @parent: parent of node
- * @value: the value
- * Return: pointer to the new_node node
- */
-avl_t *avl_insert_full(avl_t *tree, avl_t *parent, int value)
-{
-	avl_t *new_node;
+ * avl_insert - inserts a value in an AVL Tree
+ * @tree: a double pointer to the root node of
+ * the AVL tree for inserting the value
+ * @parent: a pointer to the parent node
+ * @n_node: a double pointer to the created node
+ * @val: the value to store in the node to be inserted
+ * Return: a pointer to the created node, NULL on failure
+*/
 
-	if (tree == NULL)
+avl_t *val_insert(avl_t **tree, avl_t *parent, avl_t **n_node, int val)
+{
+	int balance;
+
+	if (*tree == NULL)
+		return (*n_node = binary_tree_node(parent, val));
+	if ((*tree)->n > val)
 	{
-		new_node = binary_tree_node(parent, value);
-		if (parent->n > new_node->n)
-			parent->left = new_node;
-		else
-			parent->right = new_node;
-		return (new_node);
+		(*tree)->left = val_insert(&(*tree)->left, *tree, n_node, val);
+		if ((*tree)->left == NULL)
+			return (NULL);
 	}
-	else if (value == tree->n)
-		return (NULL);
-	else if (value < tree->n)
-		return (avl_insert_full(tree->left, tree, value));
+	else if ((*tree)->n < val)
+	{
+		(*tree)->right = val_insert(&(*tree)->right, *tree, n_node, val);
+		if ((*tree)->right == NULL)
+			return (NULL);
+	}
 	else
-		return (avl_insert_full(tree->right, tree, value));
+	{
+		return (*tree);
+	}
+
+	// Update balance factor
+	balance = binary_tree_balance(*tree);
+
+	if (balance > 1 && (*tree)->left->n > val)
+	{
+		*tree = binary_tree_rotate_right(*tree);
+	}
+	else if (balance > 1 && (*tree)->left->n < val)
+	{
+		(*tree)->left = binary_tree_rotate_left((*tree)->left);
+		*tree = binary_tree_rotate_right(*tree);
+	}
+	else if (balance < -1 && (*tree)->right->n < val)
+	{
+		*tree = binary_tree_rotate_left(*tree);
+	}
+	else if (balance < -1 && (*tree)->right->n > val)
+	{
+		(*tree)->right = binary_tree_rotate_right((*tree)->right);
+		*tree = binary_tree_rotate_left(*tree);
+	}
+	return (*tree);
 }
 
 /**
- * val_balancer - rebalance an AVL tree if needed
- *
- * @root: pointer to the root of the tree
- * @tree: pointer to the node to be rebalanced
- * @value: inserted value
- * Return: 0
- */
-
-void val_balancer(avl_t **root, avl_t *tree, int value)
-{
-	int new_balance;
-
-	new_balance = binary_tree_balance(tree);
-	if (new_balance > 1)
-	{
-		if (tree->left->n > value)
-		{
-			if (*root == tree)
-				*root = tree->left;
-			binary_tree_rotate_right(tree);
-		}
-		else
-		{
-			if (*root == tree)
-				*root = tree->left->right;
-			binary_tree_rotate_left(tree->left);
-			binary_tree_rotate_right(tree);
-		}
-	}
-	if (new_balance < -1)
-	{
-		if (tree->right->n < value)
-		{
-			if (*root == tree)
-				*root = tree->right;
-			binary_tree_rotate_left(tree);
-		}
-		else
-		{
-			if (*root == tree)
-				*root = tree->right->left;
-			binary_tree_rotate_right(tree->right);
-			binary_tree_rotate_left(tree);
-		}
-	}
-}
-
-/**
- * avl_insert - Insets the value in avl
- *
- * @tree: double pointer to root
- * @value: the value
- * Return: pointer to the new node
+ * avl_insert - inserts a value into an AVL tree.
+ * @tree: type **pointer to the root node of the AVL tree to insert into.
+ * @value: value to store in the node to be inserted
+ * Return: inserted node, or NULL if fails.
  */
 avl_t *avl_insert(avl_t **tree, int value)
 {
-	avl_t *new_node, *predecessor;
+	avl_t *new_node = NULL;
 
-	if (tree == NULL)
-		return (NULL);
 	if (*tree == NULL)
 	{
-		new_node = binary_tree_node(NULL, value);
-		*tree = new_node;
-		return (new_node);
+		*tree = binary_tree_node(NULL, value);
+		return (*tree);
 	}
-	new_node = avl_insert_full(*tree, NULL, value);
-
-	if (new_node == NULL)
-		return (NULL);
-
-	predecessor = new_node->parent;
-
-	while (predecessor != NULL)
-	{
-		val_balancer(tree, predecessor, value);
-		predecessor = predecessor->parent;
-	}
-
+	val_insert(tree, *tree, &new_node, value);
 	return (new_node);
 }
