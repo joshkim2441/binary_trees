@@ -1,7 +1,7 @@
 #include "binary_trees.h"
 
 /**
- * avl_insert - inserts a value in an AVL Tree
+ * val_insert - inserts a value in an AVL Tree
  * @tree: a double pointer to the root node of
  * the AVL tree for inserting the value
  * @parent: a pointer to the parent node
@@ -32,14 +32,10 @@ avl_t *val_insert(avl_t **tree, avl_t *parent, avl_t **n_node, int val)
 	{
 		return (*tree);
 	}
-
-	// Update balance factor
 	balance = binary_tree_balance(*tree);
 
 	if (balance > 1 && (*tree)->left->n > val)
-	{
 		*tree = binary_tree_rotate_right(*tree);
-	}
 	else if (balance > 1 && (*tree)->left->n < val)
 	{
 		(*tree)->left = binary_tree_rotate_left((*tree)->left);
