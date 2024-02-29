@@ -53,6 +53,7 @@ int inheritor(bst_t *node)
 int avl_remove_type(bst_t *root)
 {
 	int new_val = 0;
+	bst_t *tmp;
 
 	if (!root->left && !root->right)
 	{
