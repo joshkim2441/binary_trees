@@ -11,12 +11,7 @@
 heap_t *array_to_heap(int *array, size_t size)
 {
 	heap_t *root = NULL;
-	size_t j;
-
-	if (!array)
-		return (NULL);
-
-	root = heap_insert(&root, array[0]);
+	unsigned int j;
 
 	for (j = 0; j < size; j++)
 		heap_insert(&root, array[j]);
