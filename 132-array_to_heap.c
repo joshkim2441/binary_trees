@@ -11,10 +11,16 @@
 heap_t *array_to_heap(int *array, size_t size)
 {
 	heap_t *root = NULL;
+	size_t j;
 
-	for (size_t i = 0; i < size; i++)
+	if (!array)
+		return (NULL);
+
+	root = heap_insert(&root, array[0]);
+
+	for (j = 0; j < size; j++)
 	{
-		if (!heap_insert(&root, array[i]))
+		if (!heap_insert(&root, array[j]))
 		{
 			return (NULL);
 		}
