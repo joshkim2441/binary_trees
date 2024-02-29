@@ -19,11 +19,6 @@ heap_t *array_to_heap(int *array, size_t size)
 	root = heap_insert(&root, array[0]);
 
 	for (j = 0; j < size; j++)
-	{
-		if (!heap_insert(&root, array[j]))
-		{
-			return (NULL);
-		}
-	}
+		heap_insert(&root, array[j]);
 	return (root);
 }
